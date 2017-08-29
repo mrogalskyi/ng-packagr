@@ -24,7 +24,8 @@ import { NgPackageConfig } from '../ng-package.schema';
 /** CLI arguments passed to `ng-packagr` and `ngPackage()`. */
 export interface NgPackagrCliArguments {
   /** Path to the 'ng-package.json' file */
-  project: string
+  project: string,
+  cleanDestination: string
 }
 
 
@@ -43,10 +44,14 @@ export const ngPackage = (opts: NgPackagrCliArguments): Promise<any> => {
       ngPkg = p;
 
       // 1. CLEAN
-      return Promise.all([
-        rimraf(p.dest),
-        rimraf(p.workingDirectory)
-      ]);
+      if (opts.cleanDestination === 'true') {
+        return Promise.all([
+          rimraf(p.dest),
+          rimraf(p.workingDirectory)
+        ]);
+      } else {
+        return rimraf(p.workingDirectory);
+      }
     })
     // 2. ASSETS
     .then(() => processAssets(ngPkg.src, `${ngPkg.workingDirectory}/ts`))

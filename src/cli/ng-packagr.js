@@ -8,10 +8,12 @@ const path = require('path');
 const ARGS = require('minimist')(process.argv.slice(2));
 
 const project = ARGS.p || ARGS.project || path.resolve(process.cwd(), 'ng-package.json');
+const cleanDestination = ARGS.c || ARGS.clean || 'true';
 
 const ngPackagr = require('../lib/ng-packagr');
 
 ngPackagr.ngPackage({
-  project
+  project,
+  cleanDestination
 })
 .catch((err) => process.exit(111));
