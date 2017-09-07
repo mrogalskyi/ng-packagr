@@ -45,6 +45,9 @@ export class NgPackage {
 
     return path.basename(name);
   }
+  public get annotateForClosureCompiler(): boolean {
+    return this.$schema.$$get('lib.annotateForClosureCompiler');
+  }
 
   public get libExternals(): Object {
     if (this.ngPackageJson.lib) {

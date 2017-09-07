@@ -37,6 +37,11 @@
           "type": "string",
           "default": ""
         },
+        "annotateForClosureCompiler": {
+          "description": "set option for angular compiler",
+          "type": "boolean",
+          "default": true
+        },
         "externals": {
           "description": "A symbol map of external dependencies. The purpose of this map is to correctly bundle a flat module file (with `rollup`). By default, `rxjs` and `@angular/*` dependency symbols are supported.",
           "type": "object",

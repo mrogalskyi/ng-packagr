@@ -12,6 +12,7 @@ export const prepareTsConfig = (ngPkg: NgPackage, outFile: string): Promise<stri
 
       tsConfig['angularCompilerOptions']['flatModuleId'] = ngPkg.packageJson.name;
       tsConfig['angularCompilerOptions']['flatModuleOutFile'] = `${ngPkg.flatModuleFileName}.js`;
+      tsConfig['angularCompilerOptions']['annotateForClosureCompiler'] = ngPkg.annotateForClosureCompiler;
 
       tsConfig['files'] = [ ngPkg.entryFile ];
 
