@@ -37,6 +37,7 @@ export const ngPackage = (opts: NgPackagrCliArguments): Promise<any> => {
 
   /** Project configuration */
   let ngPkg: NgPackage;
+  let startTime = new Date();
 
   // 0. READ `ng-package.json` and obtain model
   return readPackage(opts.project)
@@ -58,6 +59,10 @@ export const ngPackage = (opts: NgPackagrCliArguments): Promise<any> => {
     // 3. NGC
     .then(() => prepareTsConfig(ngPkg, `${ngPkg.workingDirectory}/ts/tsconfig.lib.json`)
       .then((tsConfigFile: string) => ngc(tsConfigFile, `${ngPkg.workingDirectory}/ts`))
+      .then((es2015EntryFile: string) => {
+        info(`Compiled in ${(+new Date() - +startTime)/1000} sec`);
+        return es2015EntryFile
+      })
       .then((es2015EntryFile: string) =>
         // XX: see #46 - ngc only references to closure-annotated ES6 sources
         remapSourcemap(`${ngPkg.workingDirectory}/ts/${ngPkg.flatModuleFileName}.js`)
@@ -112,6 +117,7 @@ export const ngPackage = (opts: NgPackagrCliArguments): Promise<any> => {
     // 9. PACKAGE
     .then(() => createPackage(ngPkg.src, ngPkg.dest, ngPkg.artefacts))
     .then(() => {
+      info(`Built in ${(+new Date() - +startTime) / 1000} sec`);
       success(`Built Angular library from ${ngPkg.src}, written to ${ngPkg.dest}`);
     })
     .catch((err) => {
