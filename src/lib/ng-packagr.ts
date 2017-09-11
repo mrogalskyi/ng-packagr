@@ -25,7 +25,8 @@ import { NgPackageConfig } from '../ng-package.schema';
 export interface NgPackagrCliArguments {
   /** Path to the 'ng-package.json' file */
   project: string,
-  cleanDestination: string
+  cleanDestination: string,
+  buildUmd: string
 }
 
 
@@ -89,16 +90,18 @@ export const ngPackage = (opts: NgPackagrCliArguments): Promise<any> => {
       .then(() => remapSourcemap(`${ngPkg.workingDirectory}/${ngPkg.artefacts.module}`))
     )
     // 6. UMD: ROLLUP
-    .then(() =>
-      rollup({
-        moduleName: ngPkg.meta.name,
-        entry: `${ngPkg.workingDirectory}/${ngPkg.artefacts.module}`,
-        format: 'umd',
-        dest: `${ngPkg.workingDirectory}/${ngPkg.artefacts.main}`,
-        externals: ngPkg.libExternals
-      })
-      .then(() => remapSourcemap(`${ngPkg.workingDirectory}/${ngPkg.artefacts.main}`))
-    )
+    .then(() => {
+      if (opts.buildUmd === 'true') {
+        return rollup({
+          moduleName: ngPkg.meta.name,
+          entry: `${ngPkg.workingDirectory}/${ngPkg.artefacts.module}`,
+          format: 'umd',
+          dest: `${ngPkg.workingDirectory}/${ngPkg.artefacts.main}`,
+          externals: ngPkg.libExternals
+        })
+          .then(() => remapSourcemap(`${ngPkg.workingDirectory}/${ngPkg.artefacts.main}`))
+      }
+    })
     // 7. COPY FILES
     .then(() => copyFiles(`${ngPkg.workingDirectory}/${ngPkg.meta.scope}/**/*.{js,js.map}`, `${ngPkg.dest}/${ngPkg.meta.scope}`))
     .then(() => copyFiles(`${ngPkg.workingDirectory}/bundles/**/*.{js,js.map}`, `${ngPkg.dest}/bundles`))
