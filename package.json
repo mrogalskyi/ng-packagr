@@ -40,6 +40,7 @@
     "rimraf": "^2.6.1",
     "rollup": "^0.49.0",
     "rollup-plugin-node-resolve": "^3.0.0",
+    "less-plugin-npm-import": "^2.1.0",
     "sorcery": "^0.10.0",
     "ts-node": "^3.0.4",
     "typescript": "^2.3.2",

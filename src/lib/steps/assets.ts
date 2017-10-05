@@ -4,14 +4,15 @@ import { debug, warn } from '../util/log';
 import { readFile } from '../util/fs';
 
 // Angular Inliner for Templates and Stylesheets
-const inlineNg2Template =  require('gulp-inline-ng2-template');
+const inlineNg2Template = require('gulp-inline-ng2-template');
 
 // CSS Tools
 const autoprefixer = require('autoprefixer');
 const browserslist = require('browserslist');
 //const postcss      = require('postcss');
-import postcss     = require('postcss');
-const sass         = require('node-sass');
+import postcss = require('postcss');
+const sass = require('node-sass');
+const NpmImportPlugin = require('less-plugin-npm-import');
 import * as less from 'less';
 
 
@@ -43,7 +44,7 @@ export const processAssets = (src: string, dest: string): Promise<any> => {
 
           render
             .then((css: string) => {
-              return postcss([ autoprefixer({ browsers }) ])
+              return postcss([autoprefixer({ browsers })])
                 .process(css, { from: path, to: path.replace(ext, '.css') });
             })
             .then((result: postcss.Result) => {
@@ -88,7 +89,7 @@ const pickRenderer = (filePath: string, ext: string[], file: string): Promise<st
 
     case '.less':
       debug(`rendering less for ${filePath}`);
-      return renderLess({ filename: filePath });
+      return renderLess({ filename: filePath, plugins: [new NpmImportPlugin({ prefix: '~' })] });
 
     case '.css':
     default:
@@ -116,7 +117,7 @@ const renderLess = (lessOpts: any): Promise<string> => {
 
   return readFile(lessOpts.filename)
     .then((lessData: string) => new Promise<string>((resolve, reject) => {
-        less.render(lessData, lessOpts, (err, result) => {
+      less.render(lessData, lessOpts, (err, result) => {
         if (err) {
           reject(err);
         } else {
